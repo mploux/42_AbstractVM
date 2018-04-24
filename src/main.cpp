@@ -7,6 +7,7 @@
 #include <fstream>
 #include <regex>
 #include <map>
+#include <vector>
 #include "Action.hpp"
 
 void parseLine(const std::string &raw_line, std::vector<Action *> &actions, const int &line_num, std::map<int, std::string> &errors)
@@ -35,14 +36,14 @@ void parseLine(const std::string &raw_line, std::vector<Action *> &actions, cons
 	if (std::regex_match(line, command, validCommands))
 	{
 		std::string cmd = command.str();
-		actions.emplace_back(new Action(cmd));
+		actions.push_back(new Action(cmd));
 	}
 	else if (std::regex_match(line, command, validParamCommands))
 	{
 		std::string cmd = command[1].str();
 		std::string type = command[2].str();
 		std::string value = command[3].str();
-		actions.emplace_back(new Action(cmd, type, value));
+		actions.push_back(new Action(cmd, type, value));
 	}
 	else
 		errors[line_num] = "Syntax error !";
