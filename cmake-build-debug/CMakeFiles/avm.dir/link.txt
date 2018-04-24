@@ -1,1 +1,0 @@
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++  -std=c++11 -Wall -Wextra -g -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/avm.dir/src/main.cpp.o CMakeFiles/avm.dir/src/Action.cpp.o  -o avm 
