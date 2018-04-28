@@ -13,8 +13,11 @@
 NAME = avm
 CC = g++
 FILES =\
+Factory.cpp\
+main.cpp\
+Error.cpp\
 Action.cpp\
-main.cpp
+utils.cpp
 
 SRC = src/
 DIRS = bin
@@ -33,7 +36,7 @@ HDRS = $(OBJS:.o=.d)
 
 INCLUDES = -I srcs/
 
-CFLAGS = -std=c++11 -Wall -Wextra -pedantic
+CFLAGS = -std=c++11 -std=gnu++11 -Wall -Wextra -pedantic -g
 FLAGS = $(CFLAGS) $(INCLUDES)
 
 MKDIR = mkdir -p

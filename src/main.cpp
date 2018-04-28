@@ -10,7 +10,7 @@
 #include <vector>
 #include "Action.hpp"
 
-void parseLine(const std::string &raw_line, std::vector<Action *> &actions, const int &line_num, std::map<int, std::string> &errors)
+void parseLine(const std::string &raw_line, std::vector<Action *> &actions, Factory *factory)
 {
 	std::string line;
 
@@ -29,32 +29,33 @@ void parseLine(const std::string &raw_line, std::vector<Action *> &actions, cons
 	if (line.empty())
 		return;
 
-	std::regex validCommands("^(add|dump|pop|mul|exit)$");
+	std::regex validCommands("^(add|sub|div|mul|dump|pop|exit)$");
 	std::regex validParamCommands("^(push|assert) (int8|int16|int32|float|double)\\((.+)\\)$");
 	std::smatch command;
 
 	if (std::regex_match(line, command, validCommands))
 	{
 		std::string cmd = command.str();
-		actions.push_back(new Action(cmd));
+		actions.push_back(new Action(cmd, factory));
 	}
 	else if (std::regex_match(line, command, validParamCommands))
 	{
 		std::string cmd = command[1].str();
 		std::string type = command[2].str();
 		std::string value = command[3].str();
-		actions.push_back(new Action(cmd, type, value));
+		actions.push_back(new Action(cmd, type, value, factory));
 	}
 	else
-		errors[line_num] = "Syntax error !";
+		Error::getInstance().error("Invalid syntax !", raw_line);
 }
 
 int main(int ac, char **av)
 {
-	std::deque<float> stack;
+	std::deque<const IOperand *> stack;
 	std::vector<Action *> actions;
-	std::map<int, std::string> errors;
+	Factory	factory;
 
+	Error::getInstance().setLine(0);
 	std::ifstream in(av[1]);
 	if (in.is_open())
 	{
@@ -64,24 +65,24 @@ int main(int ac, char **av)
 		{
 			if (line == "exit")
 				break;
-			parseLine(line, actions, line_count, errors);
-			line_count++;
+			parseLine(line, actions, &factory);
+			Error::getInstance().setLine(++line_count);
 		}
+		Error::getInstance().setLine(++line_count);
 		if (line != "exit")
-			errors[line_count] = "Missing exit !";
+			Error::getInstance().error("exit is missing !");
 		in.close();
-		if (!errors.empty())
+		if (Error::getInstance().hasErrors())
+			Error::getInstance().show();
+		else
 		{
-			for (std::pair<int, std::string> s : errors)
-				std::cout << "error:" << s.first << "  " << s.second << "\n";
-			return 0;
+			for (Action *a : actions)
+			{
+				a->execute(stack);
+				delete a;
+			}
+			actions.clear();
 		}
-		for (Action *a : actions)
-		{
-			a->execute(stack);
-			delete a;
-		}
-		actions.clear();
 	}
 	else
 		std::cout << "Invalid file !" << std::endl;
