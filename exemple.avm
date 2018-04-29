@@ -6,6 +6,10 @@ push int8(127)
 push int8(10)
 add
 
+push int16(127)
+push int16(10)
+add
+
 dump
 pop
 assert double(42.42)

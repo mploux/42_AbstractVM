@@ -54,37 +54,45 @@ int main(int ac, char **av)
 	std::deque<const IOperand *> stack;
 	std::vector<Action *> actions;
 	Factory	factory;
+	std::ifstream fin;
+	std::istream in(std::cin.rdbuf());
 
 	Error::getInstance().setLine(0);
-	std::ifstream in(av[1]);
-	if (in.is_open())
+
+	if (ac == 2)
 	{
-		std::string line;
-		int line_count = 1;
-		while (std::getline(in, line))
-		{
-			if (line == "exit")
-				break;
-			parseLine(line, actions, &factory);
-			Error::getInstance().setLine(++line_count);
-		}
-		Error::getInstance().setLine(++line_count);
-		if (line != "exit")
-			Error::getInstance().error("exit is missing !");
-		in.close();
-		if (Error::getInstance().hasErrors())
-			Error::getInstance().show();
+		fin.open(av[1]);
+		if (fin.is_open())
+			in.rdbuf(fin.rdbuf());
 		else
-		{
-			for (Action *a : actions)
-			{
-				a->execute(stack);
-				delete a;
-			}
-			actions.clear();
-		}
+			std::cout << "Invalid file, continuing in command line mode...\n"; 
 	}
+
+	std::string line;
+	int line_count = 1;
+	while (std::getline(in, line))
+	{
+		if ((fin.is_open() && line == "exit") || (!fin.is_open() && line == ";;"))
+			break;
+		parseLine(line, actions, &factory);
+		Error::getInstance().setLine(++line_count);
+	}
+	if (fin.is_open())
+		fin.close();
+	Error::getInstance().setLine(++line_count);
+	if (fin.is_open() && line != "exit")
+		Error::getInstance().error("exit is missing !");
+	if (Error::getInstance().hasErrors())
+		Error::getInstance().show();
 	else
-		std::cout << "Invalid file !" << std::endl;
+	{
+		for (Action *a : actions)
+		{
+			a->execute(stack);
+			delete a;
+		}
+		actions.clear();
+	}
+
 	return 0;
 }
