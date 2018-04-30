@@ -11,20 +11,7 @@ Action::Action()
 Action::Action(const std::string &cmd, Factory *factory)
 	: m_cmd(cmd), m_rawValue("none"), m_factory(factory)
 {
-	if (m_cmd == "dump")
-		dump();
-	if (m_cmd == "pop")
-		pop();
-	if (m_cmd == "add")
-		add();
-	if (m_cmd == "sub")
-		sub();
-	if (m_cmd == "mul")
-		mul();
-	if (m_cmd == "div")
-		div();
-	if (m_cmd == "mod")
-		mod();
+	(this->*action(m_cmd))();
 }
 
 Action::Action(const std::string &cmd, const std::string &type, const std::string &value, Factory *factory)
@@ -40,10 +27,8 @@ Action::Action(const std::string &cmd, const std::string &type, const std::strin
 	{
 		m_type = m_operands[type];
 		m_value = m_factory->createOperand(m_type, m_rawValue);
-		if (m_cmd == "push")
-			push();
-		if (m_cmd == "assert")
-			assert();
+		(this->*action(m_cmd))();
+
 	}
 	else
 		Error::getInstance().error("Invalid operand: " + type);
@@ -207,6 +192,26 @@ void Action::execute()
 {
 	if (m_cmd == "dump")
 		Stack::getInstance().showDump();
+}
+
+Action::funcPtr	Action::action(const std::string &action)
+{
+	static std::map<std::string, funcPtr> actions;
+
+	if (actions.empty())
+	{
+		actions["add"] = &Action::add;
+		actions["sub"] = &Action::sub;
+		actions["mul"] = &Action::mul;
+		actions["div"] = &Action::div;
+		actions["dump"] = &Action::dump;
+		actions["pop"] = &Action::pop;
+		actions["mod"] = &Action::mod;
+		actions["push"] = &Action::push;
+		actions["assert"] = &Action::assert;
+	}
+
+	return actions[action];
 }
 
 std::ostream &operator<<(std::ostream &s, const Action &o)

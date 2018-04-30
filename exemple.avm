@@ -51,11 +51,6 @@ add
 mod
 dump
 
-push int8(42)
-push float(0.1)
-
-mod
-
-dump
+assert int32(42)
 
 exit

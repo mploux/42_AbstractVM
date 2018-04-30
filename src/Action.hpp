@@ -17,6 +17,8 @@
 class Action
 {
 private:
+	typedef void (Action::*funcPtr)(void);
+
 	std::map<std::string, eOperandType>	m_operands;
 	std::string							m_cmd;
 	eOperandType						m_type;
@@ -35,6 +37,8 @@ private:
 	void pop();
 	void push();
 	void assert();
+
+	static funcPtr	action(const std::string &action);
 
 public:
 	Action(const std::string &cmd, Factory *factory);
