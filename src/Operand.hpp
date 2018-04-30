@@ -22,9 +22,9 @@ private:
 	long double	convertValue(const std::string &str, bool verbose) const
 	{
 		if (m_precision > 2 && !utils::is_decimal(str) && verbose)
-			Error::getInstance().error("Invalid decimal value: [" + str + "]");
+			Error::getInstance().sever("Invalid decimal value: [" + str + "]");
 		if (m_precision <= 2 && !utils::is_integer(str) && verbose)
-			Error::getInstance().error("Invalid integer value: [" + str + "]");
+			Error::getInstance().sever("Invalid integer value: [" + str + "]");
 		return std::stold(str);
 	}
 
