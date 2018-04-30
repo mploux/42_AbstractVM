@@ -17,7 +17,7 @@ const IOperand *Factory::createOperand(eOperandType type, const std::string &val
 {
 	if (m_funcPtrs.find(type) == m_funcPtrs.end())
 	{
-		Error::getInstance().error("Invalid type !");
+		throw AvmException("Invalid type !");
 		return nullptr;
 	}
 	return (this->*m_funcPtrs.at(type))(value);
@@ -46,14 +46,14 @@ const IOperand *Factory::createInt32(const std::string &value) const
 
 const IOperand *Factory::createFloat(const std::string &value) const
 {
-	long double min = std::numeric_limits<float>::min();
+	long double min = -std::numeric_limits<float>::max();
 	long double max = std::numeric_limits<float>::max();
 	return new Operand<float>(value, Float, "float", 3, min, max, *this);
 }
 
 const IOperand *Factory::createDouble(const std::string &value) const
 {
-	long double min = std::numeric_limits<double>::min();
+	long double min = -std::numeric_limits<float>::max();
 	long double max = std::numeric_limits<double>::max();
 	return new Operand<double>(value, Double, "double", 4, min, max, *this);
 }

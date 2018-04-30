@@ -30,7 +30,7 @@ Action::Action(const std::string &cmd, const std::string &type, const std::strin
 		(this->*action(m_cmd))();
 	}
 	else
-		Error::getInstance().error("Invalid operand: " + type);
+		throw AvmException("Invalid operand: " + type);
 }
 
 Action::Action(const Action &o)
@@ -56,7 +56,7 @@ void Action::add()
 {
 	if (Stack::getInstance().size() < 2)
 	{
-		Error::getInstance().error("Invalid add on a stack size below 2 !");
+		throw AvmException("Invalid add on a stack size below 2 !");
 		return;
 	}
 	const IOperand &val1 = *Stack::getInstance().front();
@@ -73,7 +73,7 @@ void Action::sub()
 {
 	if (Stack::getInstance().size() < 2)
 	{
-		Error::getInstance().error("Invalid sub on a stack size below 2 !");
+		throw AvmException("Invalid sub on a stack size below 2 !");
 		return;
 	}
 	const IOperand &val1 = *Stack::getInstance().front();
@@ -90,7 +90,7 @@ void Action::mul()
 {
 	if (Stack::getInstance().size() < 2)
 	{
-		Error::getInstance().error("Invalid mul on a stack size below 2 !");
+		throw AvmException("Invalid mul on a stack size below 2 !");
 		return;
 	}
 	const IOperand &val1 = *Stack::getInstance().front();
@@ -107,7 +107,7 @@ void Action::div()
 {
 	if (Stack::getInstance().size() < 2)
 	{
-		Error::getInstance().error("Invalid div on a stack size below 2 !");
+		throw AvmException("Invalid div on a stack size below 2 !");
 		return;
 	}
 	const IOperand &val1 = *Stack::getInstance().front();
@@ -124,7 +124,7 @@ void Action::mod()
 {
 	if (Stack::getInstance().size() < 2)
 	{
-		Error::getInstance().error("Invalid mod on a stack size below 2 !");
+		throw AvmException("Invalid mod on a stack size below 2 !");
 		return;
 	}
 	const IOperand &val1 = *Stack::getInstance().front();
@@ -133,7 +133,7 @@ void Action::mod()
 	Stack::getInstance().pop();
 	if (val1.getPrecision() > 3 || val2.getPrecision() > 3)
 	{
-		Error::getInstance().error("Invalid modulus on floating point type !");
+		throw AvmException("Invalid modulus on floating point type !");
 		delete &val1;
 		delete &val2;
 		return;
@@ -153,7 +153,7 @@ void Action::pop()
 {
 	if (Stack::getInstance().empty())
 	{
-		Error::getInstance().error("Invalid pop on empty stack !");
+		throw AvmException("Invalid pop on empty stack !");
 		return;
 	}
 	delete Stack::getInstance().front();
@@ -164,7 +164,7 @@ void Action::assert()
 {
 	if (Stack::getInstance().empty())
 	{
-		Error::getInstance().error("Invalid assert on empty stack !");
+		throw AvmException("Invalid assert on empty stack !");
 		return;
 	}
 	static std::string types[] = {
@@ -180,9 +180,9 @@ void Action::assert()
 	if (p2 < 0 || p2 > 4)
 		p2 = 5;
 	if (v1 != v2)
-		Error::getInstance().error("Invalid assert: (" + v1 + " != " + v2 + ")");
+		throw AvmException("Invalid assert: (" + v1 + " != " + v2 + ")");
 	if (p1 != p2)
-		Error::getInstance().error("Invalid assert: (" + types[p1] + " != " + types[p2] + ")");
+		throw AvmException("Invalid assert: (" + types[p1] + " != " + types[p2] + ")");
 
 	delete m_value;
 }
@@ -191,7 +191,7 @@ void Action::print()
 {
 	if (Stack::getInstance().empty())
 	{
-		Error::getInstance().error("Invalid print on empty stack !");
+		throw AvmException("Invalid print on empty stack !");
 		return;
 	}
 	static std::string types[] = {
@@ -204,7 +204,7 @@ void Action::print()
 		precision = 5;
 	if (precision != 0)
 	{
-		Error::getInstance().error("Invalid assert: (int8 != " + types[precision] + ")");
+		throw AvmException("Invalid assert: (int8 != " + types[precision] + ")");
 		return;
 	}
 	char ascii_val = static_cast<char>(std::stoi(val->toString(), &pos));

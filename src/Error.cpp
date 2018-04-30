@@ -32,6 +32,11 @@ void Error::error(const std::string &message)
 
 void Error::error(const std::string &message, const std::string &line)
 {
+	if (line.empty())
+	{
+		error(message);
+		return;
+	}
 	std::string finalMessage;
 
 	finalMessage = message + "\n\033[0;36m>\033[0m  " + line + "\n";

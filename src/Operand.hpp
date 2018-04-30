@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include "exceptions/AvmException.hpp"
+#include "exceptions/AvmSeverException.hpp"
 #include "IOperand.hpp"
 #include "Error.hpp"
 #include "utils.hpp"
@@ -22,9 +24,9 @@ private:
 	long double	convertValue(const std::string &str, bool verbose) const
 	{
 		if (m_precision > 2 && !utils::is_decimal(str) && verbose)
-			Error::getInstance().sever("Invalid decimal value: [" + str + "]");
+			throw AvmSeverException("Invalid decimal value: [" + str + "]");
 		if (m_precision <= 2 && !utils::is_integer(str) && verbose)
-			Error::getInstance().sever("Invalid integer value: [" + str + "]");
+			throw AvmSeverException("Invalid integer value: [" + str + "]");
 		return std::stold(str);
 	}
 
@@ -32,9 +34,9 @@ private:
 	{
 		long double rawVal = convertValue(str, true);
 		if (rawVal < m_min)
-			Error::getInstance().error("Invalid minimum limit for type: " + m_typeName + " (" + m_strValue + " < " + utils::to_string<long double>(m_min) + ") !");
+			throw AvmException("Invalid minimum limit for type: " + m_typeName + " (" + m_strValue + " < " + utils::to_string<long double>(m_min) + ") !");
 		if (rawVal > m_max)
-			Error::getInstance().error("Invalid maximum limit for type: " + m_typeName + " (" + m_strValue + " > " + utils::to_string<long double>(m_max) + ") !");
+			throw AvmException("Invalid maximum limit for type: " + m_typeName + " (" + m_strValue + " > " + utils::to_string<long double>(m_max) + ") !");
 		return static_cast<T>(rawVal);
 	}
 
@@ -103,7 +105,7 @@ public:
 		long double v2 = convertValue(rhs.toString(), false);
 
 		if (v2 == 0)
-			Error::getInstance().sever("Invalid division by zero !");
+			throw AvmSeverException("Invalid division by zero !");
 
 		long double r = v1 / v2;
 
@@ -117,9 +119,9 @@ public:
 	const IOperand *operator%(const IOperand &rhs) const
 	{
 		if (this->getPrecision() > 2 || rhs.getPrecision() > 2)
-			Error::getInstance().sever("Invalid modulus on floating point type !");
+			throw AvmSeverException("Invalid modulus on floating point type !");
 		if (!utils::is_integer(this->toString()) || !utils::is_integer(rhs.toString()))
-			Error::getInstance().sever("Invalid modulus on floating point type !");
+			throw AvmSeverException("Invalid modulus on floating point type !");
 		
 		eOperandType type = this->getPrecision() > rhs.getPrecision() ? this->getType() : rhs.getType();
 
@@ -128,7 +130,7 @@ public:
 		long v2 = static_cast<long>(stol(rhs.toString(), &pos));
 
 		if (v2 == 0)
-			Error::getInstance().sever("Invalid modulus by zero !");
+			throw AvmSeverException("Invalid modulus by zero !");
 
 		long r = v1 % v2;
 

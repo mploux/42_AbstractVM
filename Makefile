@@ -16,6 +16,8 @@ CXX = g++
 FILES =\
 Factory.cpp\
 main.cpp\
+exceptions/AvmException.cpp\
+exceptions/AvmSeverException.cpp\
 Stack.cpp\
 Error.cpp\
 Action.cpp\

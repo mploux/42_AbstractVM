@@ -9,6 +9,8 @@
 #include <map>
 #include <vector>
 
+#include "exceptions/AvmException.hpp"
+#include "exceptions/AvmSeverException.hpp"
 #include "Action.hpp"
 
 bool parseLine(const std::string &raw_line, std::vector<Action *> &actions, Factory *factory)
@@ -50,7 +52,7 @@ bool parseLine(const std::string &raw_line, std::vector<Action *> &actions, Fact
 		actions.push_back(new Action(cmd, type, value, factory));
 	}
 	else
-		Error::getInstance().error("Invalid syntax !", raw_line);
+		throw AvmException("Invalid syntax !", raw_line);
 	return true;
 }
 
@@ -76,18 +78,36 @@ int main(int ac, char **av)
 	{
 		if ((fin.is_open() && line == "exit") || (!fin.is_open() && line == ";;"))
 			break;
-		if (!parseLine(line, actions, &factory))
+		try
 		{
-			std::cerr << "Invalid input file !" << std::endl;
-			return EXIT_FAILURE;
+			if (!parseLine(line, actions, &factory))
+				throw AvmSeverException("Invalid input file !");
 		}
+		catch (AvmSeverException &e)
+		{ Error::getInstance().sever(e.getMessage()); }
+		catch (AvmException &e)
+		{ Error::getInstance().error(e.getMessage(), e.getLine()); }
+		catch (std::exception &e)
+		{ Error::getInstance().sever("Unknown exception: " + std::string(e.what())); }
+
 		Error::getInstance().setLine(++line_count);
 	}
 	if (fin.is_open())
 		fin.close();
 	Error::getInstance().setLine(++line_count);
-	if (fin.is_open() && line != "exit")
-		Error::getInstance().error("exit is missing !");
+	
+	try
+	{
+		if (fin.is_open() && line != "exit")
+			throw AvmException("exit is missing !");
+	}
+	catch (AvmSeverException &e)
+	{ Error::getInstance().sever(e.getMessage()); }
+	catch (AvmException &e)
+	{ Error::getInstance().error(e.getMessage(), e.getLine()); }
+	catch (std::exception &e)
+	{ Error::getInstance().sever("Unknown exception: " + std::string(e.what())); }
+	
 	if (Error::getInstance().hasErrors())
 		Error::getInstance().show();
 	

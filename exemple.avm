@@ -26,12 +26,12 @@ pop
 
 push int16(4)
 
-push double(0.42)
+push double(-1.0)
 push float(42.0)
 add
 dump
 
-push int8(2)
+push int8(127)
 mul
 dump
 
