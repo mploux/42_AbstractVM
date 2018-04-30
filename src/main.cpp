@@ -13,7 +13,7 @@
 #include "exceptions/AvmSeverException.hpp"
 #include "Action.hpp"
 
-bool parseLine(const std::string &raw_line, std::vector<Action *> &actions, Factory *factory)
+static bool parseLine(const std::string &raw_line, std::vector<Action *> &actions, Factory *factory)
 {
 	std::string line;
 
@@ -36,8 +36,8 @@ bool parseLine(const std::string &raw_line, std::vector<Action *> &actions, Fact
 	if (!std::regex_match(line, validLine))
 		return false;
 
-	std::regex validCommands("^(add|sub|div|mul|mod|dump|pop|print|exit)$");
-	std::regex validParamCommands("^(push|assert) (int8|int16|int32|float|double)\\((.+)\\)$");
+	std::regex validCommands("^([a-z]+)$");
+	std::regex validParamCommands("^([a-z]+) ([a-z0-9]+)\\((.+)\\)$");
 	std::smatch command;
 	if (std::regex_match(line, command, validCommands))
 	{
@@ -56,24 +56,11 @@ bool parseLine(const std::string &raw_line, std::vector<Action *> &actions, Fact
 	return true;
 }
 
-int main(int ac, char **av)
+static void readStream(std::istream &in, std::ifstream &fin, std::vector<Action *> &actions, Factory &factory)
 {
-	std::vector<Action *> actions;
-	Factory	factory;
-	std::ifstream fin;
-	std::istream in(std::cin.rdbuf());
-
-	Error::getInstance().setLine(0);
-	if (ac == 2)
-	{
-		fin.open(av[1]);
-		if (fin.is_open())
-			in.rdbuf(fin.rdbuf());
-		else
-			std::cout << "Invalid file, continuing in command line mode...\n";
-	}
 	std::string line;
 	int line_count = 1;
+
 	while (std::getline(in, line))
 	{
 		if ((fin.is_open() && line == "exit") || (!fin.is_open() && line == ";;"))
@@ -95,7 +82,6 @@ int main(int ac, char **av)
 	if (fin.is_open())
 		fin.close();
 	Error::getInstance().setLine(++line_count);
-	
 	try
 	{
 		if (fin.is_open() && line != "exit")
@@ -107,7 +93,27 @@ int main(int ac, char **av)
 	{ Error::getInstance().error(e.getMessage(), e.getLine()); }
 	catch (std::exception &e)
 	{ Error::getInstance().sever("Unknown exception: " + std::string(e.what())); }
+}
+
+int main(int ac, char **av)
+{
+	std::vector<Action *> actions;
+	Factory	factory;
+	std::ifstream fin;
+	std::istream in(std::cin.rdbuf());
+
+	Error::getInstance().setLine(0);
+	if (ac == 2)
+	{
+		fin.open(av[1]);
+		if (fin.is_open())
+			in.rdbuf(fin.rdbuf());
+		else
+			std::cout << "Invalid file, continuing in command line mode...\n";
+	}
 	
+	readStream(in, fin, actions, factory);
+
 	if (Error::getInstance().hasErrors())
 		Error::getInstance().show();
 	

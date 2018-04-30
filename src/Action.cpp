@@ -242,6 +242,9 @@ Action::funcPtr	Action::action(const std::string &action)
 		actions["print"] = &Action::print;
 	}
 
+	if (actions.find(action) == actions.end())
+		throw AvmException("Unknown instruction: " + action);
+
 	return actions[action];
 }
 

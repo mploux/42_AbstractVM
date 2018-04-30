@@ -40,7 +40,7 @@ HDRS = $(OBJS:.o=.d)
 
 INCLUDES = -I srcs/
 
-CFLAGS = -std=c++11 -std=gnu++11 -Wall -Wextra -pedantic -g
+CFLAGS = -std=c++11 -std=gnu++11 -Wall -Wextra -pedantic
 FLAGS = $(CFLAGS) $(INCLUDES)
 
 MKDIR = mkdir -p
