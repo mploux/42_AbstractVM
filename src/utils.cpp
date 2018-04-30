@@ -2,65 +2,12 @@
 
 bool utils::is_decimal(const std::string &str)
 {
-	long double value;
-	bool result;
-	size_t	spos;
-
-	value = 0.0;
-	try
-	{
-		value = std::stold(str, &spos);
-	}
-	catch (std::invalid_argument &e)
-	{
-		std::string err = e.what();
-		Error::getInstance().error(err);
-		return false;
-	}
-	catch (std::out_of_range &e)
-	{
-		std::string err = e.what();
-		Error::getInstance().error(err);
-		return false;
-	}
-	catch (std::exception &e)
-	{
-		Error::getInstance().error("Unknown decimal error !");
-		return false;
-	}
-
-	result = spos == str.size() && !std::isnan(value);
-	return (result);
+	std::regex	match("^[-]?[0-9]+\\.[0-9]+$");
+	return std::regex_match(str, match);
 }
 
-bool utils::is_decimal(const std::string &str, long double &value)
+bool utils::is_integer(const std::string &str)
 {
-	bool result;
-	size_t	spos;
-
-	value = 0.0;
-	try
-	{
-		value = std::stold(str, &spos);
-	}
-	catch (std::invalid_argument &e)
-	{
-		std::string err = e.what();
-		Error::getInstance().error(err);
-		return false;
-	}
-	catch (std::out_of_range &e)
-	{
-		std::string err = e.what();
-		Error::getInstance().error(err);
-		return false;
-	}
-	catch (std::exception &e)
-	{
-		Error::getInstance().error("Unknown decimal error !");
-		return false;
-	}
-
-	result = spos == str.size() && !std::isnan(value);
-	return (result);
+	std::regex	match("^[-]?[0-9]+$");
+	return std::regex_match(str, match);
 }

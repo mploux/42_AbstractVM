@@ -39,10 +39,17 @@ void Error::error(const std::string &message, const std::string &line)
 		m_errors.insert(std::pair<int, std::string>(m_line, finalMessage));
 }
 
+void Error::sever(const std::string &message)
+{
+	show();
+	std::cout << "\033[1;31msever line " << m_line << ":  \033[0m" << message << "\n";
+	exit(1);
+}
+
 void Error::show()
 {
 	for (auto &pair : m_errors)
-		std::cout << "\e[1merror line " << pair.first << ":  \e[0m" << pair.second << "\n";
+		std::cout << "\x1B[1merror line " << pair.first << ":  \x1B[0m" << pair.second << "\n";
 }
 
 bool Error::hasErrors()

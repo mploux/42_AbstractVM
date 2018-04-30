@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <limits>
+#include <map>
 
 #include "IOperand.hpp"
 #include "eOperandType.hpp"
@@ -9,6 +10,10 @@
 class Factory
 {
 private:
+	typedef const IOperand *(Factory::*funcPtr)(const std::string &) const;
+
+	std::map<eOperandType, funcPtr> m_funcPtrs;
+
 	const IOperand *createInt8(const std::string &value) const;
 	const IOperand *createInt16(const std::string &value) const;
 	const IOperand *createInt32(const std::string &value) const;

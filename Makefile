@@ -11,10 +11,12 @@
 # **************************************************************************** #
 
 NAME = avm
-CC = g++
+CC = gcc
+CXX = g++
 FILES =\
 Factory.cpp\
 main.cpp\
+Stack.cpp\
 Error.cpp\
 Action.cpp\
 utils.cpp
@@ -48,7 +50,7 @@ all: $(NAME)
 $(NAME): $(DIRS) $(OBJS)
 	@printf "\r$(GREEN)Compiling sources: DONE !                      $(NO_COLOR)\n";
 	@printf "Building objects...\r"
-	@$(CC) -o $(NAME) $(OBJS) $(CFLAGS) $(INCLUDES) $(DEPS) $(DEPSFLAGS)
+	@$(CXX) -o $(NAME) $(OBJS) $(CFLAGS) $(INCLUDES) $(DEPS) $(DEPSFLAGS)
 	@printf "\r$(GREEN)Building objects: DONE !$(NO_COLOR)\n";
 	@printf "\n$(GREEN)Building done: $(GREEN_BG)$(NAME)$(NO_COLOR)\n"
 
@@ -57,7 +59,7 @@ $(DIRS):
 
 bin/%.o: src/%.cpp
 	@printf "\rCompiling sources: $<                          \r";
-	@$(CC) $(CFLAGS) -MMD -c $< -o $@ $(INCLUDES)
+	@$(CXX) $(CFLAGS) -MMD -c $< -o $@ $(INCLUDES)
 
 clean:
 	@printf "Cleaning objects..."

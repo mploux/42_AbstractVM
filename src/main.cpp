@@ -8,9 +8,10 @@
 #include <regex>
 #include <map>
 #include <vector>
+
 #include "Action.hpp"
 
-void parseLine(const std::string &raw_line, std::vector<Action *> &actions, Factory *factory)
+bool parseLine(const std::string &raw_line, std::vector<Action *> &actions, Factory *factory)
 {
 	std::string line;
 
@@ -27,12 +28,15 @@ void parseLine(const std::string &raw_line, std::vector<Action *> &actions, Fact
 		line.erase(line.begin(), line.end());
 
 	if (line.empty())
-		return;
+		return true;
+	
+	std::regex validLine("^[A-Za-z0-9\\(\\)\\-\\.\\ \t]*$");
+	if (!std::regex_match(line, validLine))
+		return false;
 
-	std::regex validCommands("^(add|sub|div|mul|dump|pop|exit)$");
+	std::regex validCommands("^(add|sub|div|mul|mod|dump|pop|exit)$");
 	std::regex validParamCommands("^(push|assert) (int8|int16|int32|float|double)\\((.+)\\)$");
 	std::smatch command;
-
 	if (std::regex_match(line, command, validCommands))
 	{
 		std::string cmd = command.str();
@@ -47,34 +51,36 @@ void parseLine(const std::string &raw_line, std::vector<Action *> &actions, Fact
 	}
 	else
 		Error::getInstance().error("Invalid syntax !", raw_line);
+	return true;
 }
 
 int main(int ac, char **av)
 {
-	std::deque<const IOperand *> stack;
 	std::vector<Action *> actions;
 	Factory	factory;
 	std::ifstream fin;
 	std::istream in(std::cin.rdbuf());
 
 	Error::getInstance().setLine(0);
-
 	if (ac == 2)
 	{
 		fin.open(av[1]);
 		if (fin.is_open())
 			in.rdbuf(fin.rdbuf());
 		else
-			std::cout << "Invalid file, continuing in command line mode...\n"; 
+			std::cout << "Invalid file, continuing in command line mode...\n";
 	}
-
 	std::string line;
 	int line_count = 1;
 	while (std::getline(in, line))
 	{
 		if ((fin.is_open() && line == "exit") || (!fin.is_open() && line == ";;"))
 			break;
-		parseLine(line, actions, &factory);
+		if (!parseLine(line, actions, &factory))
+		{
+			std::cerr << "Invalid input file !" << std::endl;
+			return EXIT_FAILURE;
+		}
 		Error::getInstance().setLine(++line_count);
 	}
 	if (fin.is_open())
@@ -84,15 +90,15 @@ int main(int ac, char **av)
 		Error::getInstance().error("exit is missing !");
 	if (Error::getInstance().hasErrors())
 		Error::getInstance().show();
-	else
+	
+	for (Action *a : actions)
 	{
-		for (Action *a : actions)
-		{
-			a->execute(stack);
-			delete a;
-		}
-		actions.clear();
+		if (!Error::getInstance().hasErrors())
+			a->execute();
+		delete a;
 	}
+	actions.clear();
+	Stack::getInstance().clean();
 
-	return 0;
+	return EXIT_SUCCESS;
 }

@@ -18,6 +18,8 @@ public:
 	void error(const std::string &message);
 	void error(const std::string &message, const std::string &line);
 
+	void sever(const std::string &message);
+
 	void setLine(const int &line);
 	int &getLine();
 

@@ -8,11 +8,11 @@
 #include <deque>
 #include <map>
 
-#include "IOperand.hpp"
 #include "Factory.hpp"
 #include "Error.hpp"
 #include "utils.hpp"
 #include "Operand.hpp"
+#include "Stack.hpp"
 
 class Action
 {
@@ -25,6 +25,17 @@ private:
 	Factory								*m_factory;
 
 	Action();
+
+	void add();
+	void sub();
+	void mul();
+	void div();
+	void mod();
+	void dump();
+	void pop();
+	void push();
+	void assert();
+
 public:
 	Action(const std::string &cmd, Factory *factory);
 	Action(const std::string &cmd, const std::string &type, const std::string &value, Factory *factory);
@@ -33,7 +44,7 @@ public:
 	virtual ~Action();
 	Action &operator=(const Action &o);
 
-	void execute(std::deque<const IOperand *> &stack);
+	void execute();
 };
 
 std::ostream &operator<<(std::ostream &s, const Action &o);

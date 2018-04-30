@@ -2,15 +2,60 @@
 ; exemple.avm -
 ; -------------
 
-push int8(127)
-push int8(10)
-add
+push int8(1)
+dump
 
-push int16(127)
-push int16(10)
+push float(0.42)
+dump
+
+pop
+
+
+push int16(42)
+dump
+
+pop
+pop
+
+push int16(42)
+push int32(84)
+sub
+dump
+
+pop
+
+push int16(4)
+
+push double(0.42)
+push float(42.0)
 add
+dump
+
+push int8(2)
+mul
+dump
+
+div
+dump
+
+pop
+
+push int16(84)
+push int16(42)
+push int32(3)
+mul
+push int16(84)
+push int16(2)
+mul
+add
+mod
+dump
+
+push int8(42)
+push float(0.1)
+
+mod
 
 dump
-pop
-assert double(42.42)
+
 exit
