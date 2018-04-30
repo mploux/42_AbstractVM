@@ -53,4 +53,7 @@ dump
 
 assert int32(42)
 
+push int8(65)
+print
+
 exit

@@ -22,6 +22,7 @@ public:
 	void push(const IOperand *o);
 	const IOperand *front();
 	void dump();
+	void dump(const std::string &str);
 	void showDump();
 	std::size_t	size();
 	bool empty();

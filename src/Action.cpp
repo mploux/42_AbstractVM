@@ -28,7 +28,6 @@ Action::Action(const std::string &cmd, const std::string &type, const std::strin
 		m_type = m_operands[type];
 		m_value = m_factory->createOperand(m_type, m_rawValue);
 		(this->*action(m_cmd))();
-
 	}
 	else
 		Error::getInstance().error("Invalid operand: " + type);
@@ -136,7 +135,7 @@ void Action::mod()
 	{
 		Error::getInstance().error("Invalid modulus on floating point type !");
 		delete &val1;
-		delete &val2;		
+		delete &val2;
 		return;
 	}
 	const IOperand *result = val1 % val2;
@@ -163,6 +162,11 @@ void Action::pop()
 
 void Action::assert()
 {
+	if (Stack::getInstance().empty())
+	{
+		Error::getInstance().error("Invalid assert on empty stack !");
+		return;
+	}
 	static std::string types[] = {
 		"int8", "int16", "int32", "float", "double", "invalid_type"
 	};
@@ -181,6 +185,32 @@ void Action::assert()
 		Error::getInstance().error("Invalid assert: (" + types[p1] + " != " + types[p2] + ")");
 
 	delete m_value;
+}
+
+void Action::print()
+{
+	if (Stack::getInstance().empty())
+	{
+		Error::getInstance().error("Invalid print on empty stack !");
+		return;
+	}
+	static std::string types[] = {
+		"int8", "int16", "int32", "float", "double", "invalid_type"
+	};
+	std::size_t pos;
+	const IOperand *val = Stack::getInstance().front();
+	int precision = val->getPrecision();
+		if (precision < 0 || precision > 4)
+		precision = 5;
+	if (precision != 0)
+	{
+		Error::getInstance().error("Invalid assert: (int8 != " + types[precision] + ")");
+		return;
+	}
+	char ascii_val = static_cast<char>(std::stoi(val->toString(), &pos));
+	std::stringstream ss;
+	ss << ascii_val;
+	Stack::getInstance().dump(ss.str());
 }
 
 void Action::push()
@@ -209,6 +239,7 @@ Action::funcPtr	Action::action(const std::string &action)
 		actions["mod"] = &Action::mod;
 		actions["push"] = &Action::push;
 		actions["assert"] = &Action::assert;
+		actions["print"] = &Action::print;
 	}
 
 	return actions[action];

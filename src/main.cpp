@@ -34,7 +34,7 @@ bool parseLine(const std::string &raw_line, std::vector<Action *> &actions, Fact
 	if (!std::regex_match(line, validLine))
 		return false;
 
-	std::regex validCommands("^(add|sub|div|mul|mod|dump|pop|exit)$");
+	std::regex validCommands("^(add|sub|div|mul|mod|dump|pop|print|exit)$");
 	std::regex validParamCommands("^(push|assert) (int8|int16|int32|float|double)\\((.+)\\)$");
 	std::smatch command;
 	if (std::regex_match(line, command, validCommands))

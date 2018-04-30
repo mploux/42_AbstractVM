@@ -37,6 +37,7 @@ private:
 	void pop();
 	void push();
 	void assert();
+	void print();
 
 	static funcPtr	action(const std::string &action);
 

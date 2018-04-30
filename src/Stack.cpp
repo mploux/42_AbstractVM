@@ -39,6 +39,11 @@ void Stack::dump()
 		m_dump.push_back(o->toString());
 }
 
+void Stack::dump(const std::string &str)
+{
+	m_dump.push_back(str);
+}
+
 void Stack::showDump()
 {
 	for (std::string &o : m_dump)
