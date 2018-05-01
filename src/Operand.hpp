@@ -46,7 +46,7 @@ public:
 	{
 		m_value = convertToTypeValue(m_strValue);
 	}
-	
+
 	~Operand() {}
 
 	const IOperand *operator+(const IOperand &rhs) const
@@ -56,7 +56,7 @@ public:
 		T v1 = m_value;
 		long double v2 = convertValue(rhs.toString(), false);
 
-		long double r = v1 + v2;
+		long double r = v2 + v1;
 
 		std::stringstream ss;
 		ss << r;
@@ -72,7 +72,7 @@ public:
 		T v1 = m_value;
 		long double v2 = convertValue(rhs.toString(), false);
 
-		long double r = v1 - v2;
+		long double r = v2 - v1;
 
 		std::stringstream ss;
 		ss << r;
@@ -88,7 +88,7 @@ public:
 		T v1 = m_value;
 		long double v2 = convertValue(rhs.toString(), false);
 
-		long double r = v1 * v2;
+		long double r = v2 * v1;
 
 		std::stringstream ss;
 		ss << r;
@@ -104,10 +104,10 @@ public:
 		T v1 = m_value;
 		long double v2 = convertValue(rhs.toString(), false);
 
-		if (v2 == 0)
+		if (v1 == 0)
 			throw AvmSeverException("Invalid division by zero !");
 
-		long double r = v1 / v2;
+		long double r = v2 / v1;
 
 		std::stringstream ss;
 		ss << r;
@@ -122,17 +122,17 @@ public:
 			throw AvmSeverException("Invalid modulus on floating point type !");
 		if (!utils::is_integer(this->toString()) || !utils::is_integer(rhs.toString()))
 			throw AvmSeverException("Invalid modulus on floating point type !");
-		
+
 		eOperandType type = this->getPrecision() > rhs.getPrecision() ? this->getType() : rhs.getType();
 
 		std::size_t pos;
 		long v1 = static_cast<long>(m_value);
 		long v2 = static_cast<long>(stol(rhs.toString(), &pos));
 
-		if (v2 == 0)
+		if (v1 == 0)
 			throw AvmSeverException("Invalid modulus by zero !");
 
-		long r = v1 % v2;
+		long r = v2 % v1;
 
 		std::stringstream ss;
 		ss << r;
@@ -142,6 +142,6 @@ public:
 	}
 
 	int getPrecision(void) const { return m_precision; };
-	eOperandType  getType(void) const { return m_type; };	
+	eOperandType  getType(void) const { return m_type; };
 	std::string const &toString(void) const { return m_strValue; }
 };
