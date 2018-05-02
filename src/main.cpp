@@ -31,7 +31,7 @@ static bool parseLine(const std::string &raw_line, std::vector<Action *> &action
 
 	if (line.empty())
 		return true;
-	
+
 	std::regex validLine("^[A-Za-z0-9\\(\\)\\-\\.\\ \t]*$");
 	if (!std::regex_match(line, validLine))
 		return false;
@@ -61,12 +61,17 @@ static void readStream(std::istream &in, std::ifstream &fin, std::vector<Action 
 	std::string line;
 	int line_count = 1;
 
+	bool hasExit = false;
 	while (std::getline(in, line))
 	{
-		if ((fin.is_open() && line == "exit") || (!fin.is_open() && line == ";;"))
-			break;
 		try
 		{
+			if (line_count + 1 >= std::numeric_limits<int>::max() - 1)
+				throw AvmSeverException("The file is to big !");
+			if (line == "exit")
+				hasExit = true;
+			if ((fin.is_open() && line == "exit") || (!fin.is_open() && line == ";;"))
+				break;
 			if (!parseLine(line, actions, &factory))
 				throw AvmSeverException("Invalid input file !");
 		}
@@ -84,7 +89,7 @@ static void readStream(std::istream &in, std::ifstream &fin, std::vector<Action 
 	Error::getInstance().setLine(++line_count);
 	try
 	{
-		if (fin.is_open() && line != "exit")
+		if (!hasExit)
 			throw AvmException("exit is missing !");
 	}
 	catch (AvmSeverException &e)
@@ -111,16 +116,21 @@ int main(int ac, char **av)
 		else
 			std::cout << "Invalid file, continuing in command line mode...\n";
 	}
-	
+
 	readStream(in, fin, actions, factory);
 
 	if (Error::getInstance().hasErrors())
 		Error::getInstance().show();
 	
+	bool running = true;
 	for (Action *a : actions)
 	{
-		if (!Error::getInstance().hasErrors())
+		if (!Error::getInstance().hasErrors() && running)
+		{
+			if (a->getAction() == "exit")
+				running = false;
 			a->execute();
+		}
 		delete a;
 	}
 	actions.clear();

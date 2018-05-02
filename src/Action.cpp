@@ -218,6 +218,9 @@ void Action::push()
 	Stack::getInstance().push(m_value);
 }
 
+void Action::cmd_exit()
+{}
+
 void Action::execute()
 {
 	if (m_cmd == "dump")
@@ -240,12 +243,18 @@ Action::funcPtr	Action::action(const std::string &action)
 		actions["push"] = &Action::push;
 		actions["assert"] = &Action::assert;
 		actions["print"] = &Action::print;
+		actions["exit"] = &Action::cmd_exit;
 	}
 
 	if (actions.find(action) == actions.end())
 		throw AvmException("Unknown instruction: " + action);
 
 	return actions[action];
+}
+
+const std::string &Action::getAction() const
+{
+	return m_cmd;
 }
 
 std::ostream &operator<<(std::ostream &s, const Action &o)

@@ -38,6 +38,7 @@ private:
 	void push();
 	void assert();
 	void print();
+	void cmd_exit();
 
 	static funcPtr	action(const std::string &action);
 
@@ -50,6 +51,7 @@ public:
 	Action &operator=(const Action &o);
 
 	void execute();
+	const std::string &getAction() const;
 };
 
 std::ostream &operator<<(std::ostream &s, const Action &o);
