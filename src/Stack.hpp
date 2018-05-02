@@ -11,6 +11,7 @@ class Stack
 private:
 	std::deque<const IOperand *>	m_stack;
 	std::vector<std::string>		m_dump;
+	std::deque<std::string>			m_print;
 
 public:
 	Stack();
@@ -22,8 +23,9 @@ public:
 	void push(const IOperand *o);
 	const IOperand *front();
 	void dump();
-	void dump(const std::string &str);
+	void print(const std::string &str);
 	void showDump();
+	void showPrint();
 	std::size_t	size();
 	bool empty();
 	void clean();

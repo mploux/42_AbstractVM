@@ -36,19 +36,25 @@ const IOperand *Stack::front()
 void Stack::dump()
 {
 	for (const IOperand *o : m_stack)
-		m_dump.push_back(o->toString());
+		m_dump.push_back(o->toString() + "\n");
 }
 
-void Stack::dump(const std::string &str)
+void Stack::print(const std::string &str)
 {
-	m_dump.push_back(str);
+	m_print.push_back(str);
 }
 
 void Stack::showDump()
 {
 	for (std::string &o : m_dump)
-		std::cout << o << "\n";
+		std::cout << o;
 	m_dump.clear();
+}
+
+void Stack::showPrint()
+{
+	std::cout << m_print.front();
+	m_print.pop_front();
 }
 
 std::size_t	Stack::size()

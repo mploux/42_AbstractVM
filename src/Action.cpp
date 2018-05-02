@@ -210,7 +210,7 @@ void Action::print()
 	char ascii_val = static_cast<char>(std::stoi(val->toString(), &pos));
 	std::stringstream ss;
 	ss << ascii_val;
-	Stack::getInstance().dump(ss.str());
+	Stack::getInstance().print(ss.str());
 }
 
 void Action::push()
@@ -225,6 +225,8 @@ void Action::execute()
 {
 	if (m_cmd == "dump")
 		Stack::getInstance().showDump();
+	if (m_cmd == "print")
+		Stack::getInstance().showPrint();
 }
 
 Action::funcPtr	Action::action(const std::string &action)
